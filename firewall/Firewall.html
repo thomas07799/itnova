@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firewall & Fernzugriff – IT Nova Rosinski</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #e8ecf2;
+      --accent: #1a5aff;
+      --accent2: #0a3bbf;
+      --text: #0d1117;
+      --muted: #5a6478;
+      --border: #d4dae6;
+      --glow: rgba(26, 90, 255, 0.12);
+      --green: #0fa968;
+      --green-bg: rgba(15, 169, 104, 0.08);
+      --orange: #e07a0f;
+      --orange-bg: rgba(224, 122, 15, 0.08);
+      --red: #e03b3b;
+      --red-bg: rgba(224, 59, 59, 0.08);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 48px 48px; opacity: 0.4; pointer-events: none; z-index: 0; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 3rem; height: 68px; background: rgba(240,242,245,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.15rem; letter-spacing: -0.02em; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .nav-back { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-back:hover { color: var(--accent); }
+    .page-header { position: relative; z-index: 1; padding: 10rem 2rem 4rem; max-width: 1100px; margin: 0 auto; }
+    .page-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 100px; padding: 0.35rem 1rem; font-size: 0.78rem; font-weight: 500; color: var(--accent); margin-bottom: 1.5rem; animation: fadeUp 0.5s ease both; }
+    .page-header h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: clamp(2.2rem, 5vw, 4rem); letter-spacing: -0.03em; line-height: 1.08; max-width: 700px; animation: fadeUp 0.5s 0.1s ease both; }
+    .page-header h1 span { color: var(--accent); }
+    .page-header p { margin-top: 1.25rem; font-size: 1.05rem; color: var(--muted); max-width: 560px; line-height: 1.7; font-weight: 300; animation: fadeUp 0.5s 0.2s ease both; }
+    .content { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 2rem 6rem; }
+    .section-label { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+    .section-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; letter-spacing: -0.03em; margin-bottom: 2rem; }
+
+    /* Threat cards */
+    .threats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 4rem; }
+    .threat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; }
+    .threat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .threat-card.high::before { background: var(--red); }
+    .threat-card.medium::before { background: var(--orange); }
+    .threat-card.low::before { background: var(--green); }
+    .threat-level { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.75rem; }
+    .threat-card.high .threat-level { color: var(--red); }
+    .threat-card.medium .threat-level { color: var(--orange); }
+    .threat-card.low .threat-level { color: var(--green); }
+    .threat-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    .threat-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .threat-desc { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+    /* Firewall comparison */
+    .fw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 4rem; }
+    .fw-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+    .fw-card.recommended { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 30px var(--glow); }
+    .fw-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .fw-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+    .fw-title small { display: block; font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: 0.78rem; color: var(--muted); }
+    .fw-badge { background: var(--accent); color: #fff; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 4px; letter-spacing: 0.05em; }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .feature-list li { display: flex; align-items: center; gap: 0.6rem; font-size: 0.85rem; color: var(--muted); }
+    .feature-list li::before { content: '→'; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    /* VPN methods */
+    .vpn-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+    .vpn-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; transition: all 0.25s; }
+    .vpn-card:hover { border-color: var(--accent); box-shadow: 0 8px 30px var(--glow); }
+    .vpn-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+    .vpn-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .vpn-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; margin-bottom: 1rem; }
+    .vpn-pros { list-style: none; display: flex; flex-direction: column; gap: 0.35rem; }
+    .vpn-pros li { font-size: 0.78rem; color: var(--muted); display: flex; gap: 0.5rem; }
+    .vpn-pros li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+    .vpn-tag { display: inline-block; margin-top: 1rem; background: var(--surface2); border-radius: 4px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+
+    /* Rules table */
+    .rules-table { width: 100%; border-collapse: collapse; margin-bottom: 4rem; background: var(--surface); border-radius: 14px; overflow: hidden; border: 1px solid var(--border); }
+    .rules-table th { background: var(--surface2); padding: 0.85rem 1.25rem; text-align: left; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); }
+    .rules-table td { padding: 0.85rem 1.25rem; font-size: 0.82rem; border-bottom: 1px solid var(--border); color: var(--muted); }
+    .rules-table tr:last-child td { border-bottom: none; }
+    .rules-table tr:hover td { background: var(--surface2); }
+    .tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; }
+    .tag.allow { background: var(--green-bg); color: var(--green); }
+    .tag.deny { background: var(--red-bg); color: var(--red); }
+    .tag.vpn { background: rgba(26,90,255,0.08); color: var(--accent); }
+
+    /* Solutions */
+    .solutions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 4rem; }
+    .solution-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; transition: all 0.25s; position: relative; overflow: hidden; }
+    .solution-card::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--accent); transform: scaleX(0); transition: transform 0.3s; }
+    .solution-card:hover::after { transform: scaleX(1); }
+    .solution-card:hover { box-shadow: 0 8px 30px var(--glow); }
+    .solution-icon { font-size: 1.5rem; margin-bottom: 1rem; }
+    .solution-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .solution-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+    .solution-tag { display: inline-block; margin-top: 1rem; background: var(--surface2); border-radius: 4px; padding: 0.2rem 0.6rem; font-size: 0.72rem; font-weight: 600; color: var(--accent); }
+
+    .cta-strip { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 3rem; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
+    .cta-strip h3 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; letter-spacing: -0.02em; }
+    .cta-strip p { font-size: 0.875rem; color: var(--muted); margin-top: 0.4rem; }
+    .cta-btn { background: var(--accent); color: #fff; border: none; padding: 0.85rem 2rem; border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; cursor: pointer; white-space: nowrap; text-decoration: none; transition: background 0.2s; }
+    .cta-btn:hover { background: var(--accent2); }
+    footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--muted); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 768px) { nav { padding: 0 1.5rem; } .threats { grid-template-columns: 1fr 1fr; } .fw-grid { grid-template-columns: 1fr; } .vpn-cards { grid-template-columns: 1fr; } .solutions { grid-template-columns: 1fr; } .cta-strip { flex-direction: column; } }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="../index.html" class="nav-logo">IT <span>Nova</span> Rosinski</a>
+    <a href="../index.html" class="nav-back">← Zurück zur Startseite</a>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-badge">🔒 Firewall & Fernzugriff</div>
+    <h1>Ihr Netzwerk.<br><span>Geschützt. Kontrolliert. Erreichbar.</span></h1>
+    <p>Professionelle Firewall-Lösungen und sicherer Remote-Zugriff für Ihr Unternehmen — damit Sie von überall arbeiten können, ohne Kompromisse bei der Sicherheit.</p>
+  </div>
+
+  <div class="content">
+
+    <div class="section-label">Bedrohungslage</div>
+    <h2 class="section-title">Warum Firewall & Zugriffsschutz unverzichtbar sind</h2>
+    <div class="threats">
+      <div class="threat-card high">
+        <div class="threat-level">Hohes Risiko</div>
+        <div class="threat-icon">🦠</div>
+        <div class="threat-name">Ransomware</div>
+        <div class="threat-desc">Verschlüsselt Ihre Daten und fordert Lösegeld — oft durch unsichere RDP-Zugänge.</div>
+      </div>
+      <div class="threat-card high">
+        <div class="threat-level">Hohes Risiko</div>
+        <div class="threat-icon">🎣</div>
+        <div class="threat-name">Phishing & Social Engineering</div>
+        <div class="threat-desc">Angreifer erschleichen sich Zugangsdaten durch gefälschte E-Mails und Webseiten.</div>
+      </div>
+      <div class="threat-card medium">
+        <div class="threat-level">Mittleres Risiko</div>
+        <div class="threat-icon">🔓</div>
+        <div class="threat-name">Ungesicherter Fernzugriff</div>
+        <div class="threat-desc">Offene RDP-Ports oder schwache VPN-Konfigurationen sind Einfallstore für Angreifer.</div>
+      </div>
+      <div class="threat-card medium">
+        <div class="threat-level">Mittleres Risiko</div>
+        <div class="threat-icon">📡</div>
+        <div class="threat-name">Man-in-the-Middle</div>
+        <div class="threat-desc">Abfangen von Daten in unsicheren WLAN-Netzwerken ohne Verschlüsselung.</div>
+      </div>
+    </div>
+
+    <div class="section-label">Firewall-Lösungen</div>
+    <h2 class="section-title">Was wir einsetzen</h2>
+    <div class="fw-grid">
+      <div class="fw-card recommended">
+        <div class="fw-header">
+          <div class="fw-title">OPNsense / pfSense<small>Open-Source Enterprise Firewall</small></div>
+          <span class="fw-badge">Empfohlen</span>
+        </div>
+        <ul class="feature-list">
+          <li>Stateful Packet Inspection (SPI)</li>
+          <li>Integriertes IDS/IPS (Suricata)</li>
+          <li>VPN-Server (WireGuard, OpenVPN, IPsec)</li>
+          <li>VLAN-Segmentierung</li>
+          <li>Traffic-Analyse & Reporting</li>
+          <li>Geo-IP-Blocking</li>
+          <li>Webfilter & DNS-Sinkholing</li>
+          <li>Kostenlos, keine Lizenzkosten</li>
+        </ul>
+      </div>
+      <div class="fw-card">
+        <div class="fw-header">
+          <div class="fw-title">Windows Defender Firewall<small>Integriert in Windows Server</small></div>
+        </div>
+        <ul class="feature-list">
+          <li>Basis-Paketfilterung</li>
+          <li>Anwendungsbasierte Regeln</li>
+          <li>Eingehende/ausgehende Kontrolle</li>
+          <li>Gut für einzelne Endgeräte</li>
+          <li>Kein IDS/IPS</li>
+          <li>Keine zentralisierte Verwaltung</li>
+          <li>Kein VPN-Server</li>
+          <li>Keine Netzwerksegmentierung</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="section-label">Fernzugriff</div>
+    <h2 class="section-title">Sichere Zugangsmethoden im Vergleich</h2>
+    <div class="vpn-cards">
+      <div class="vpn-card">
+        <div class="vpn-icon">⚡</div>
+        <div class="vpn-title">WireGuard VPN</div>
+        <div class="vpn-desc">Modernes, schnelles VPN-Protokoll — ideal für dauerhaft verbundene Geräte und Homeoffice.</div>
+        <ul class="vpn-pros">
+          <li>Sehr schnell & ressourcenschonend</li>
+          <li>Einfache Konfiguration</li>
+          <li>Starke Verschlüsselung (ChaCha20)</li>
+          <li>Mobil & Desktop</li>
+        </ul>
+        <span class="vpn-tag">Empfohlen</span>
+      </div>
+      <div class="vpn-card">
+        <div class="vpn-icon">🔒</div>
+        <div class="vpn-title">OpenVPN</div>
+        <div class="vpn-desc">Bewährtes, flexibles VPN — gut für komplexere Setups und ältere Clients.</div>
+        <ul class="vpn-pros">
+          <li>Weit verbreitet & erprobt</li>
+          <li>Zertifikatsbasierte Authentifizierung</li>
+          <li>Läuft auf Port 443 (firewallfreundlich)</li>
+          <li>Viele Client-Apps verfügbar</li>
+        </ul>
+        <span class="vpn-tag">Klassiker</span>
+      </div>
+      <div class="vpn-card">
+        <div class="vpn-icon">🖥️</div>
+        <div class="vpn-title">Remote Desktop (RDP via VPN)</div>
+        <div class="vpn-desc">Vollständiger Zugriff auf Windows-Rechner im Büro — sicher nur in Kombination mit VPN.</div>
+        <ul class="vpn-pros">
+          <li>Gewohntes Windows-Interface</li>
+          <li>Kein Port direkt ins Internet</li>
+          <li>2-Faktor empfohlen</li>
+          <li>Ideal für Homeoffice</li>
+        </ul>
+        <span class="vpn-tag">Mit VPN</span>
+      </div>
+    </div>
+
+    <div class="section-label">Beispiel-Regelwerk</div>
+    <h2 class="section-title">Typische Firewall-Regeln für ein KMU</h2>
+    <table class="rules-table">
+      <thead>
+        <tr>
+          <th>Richtung</th>
+          <th>Protokoll</th>
+          <th>Port</th>
+          <th>Quelle</th>
+          <th>Ziel</th>
+          <th>Aktion</th>
+          <th>Beschreibung</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Eingehend</td><td>UDP</td><td>51820</td><td>Any</td><td>Firewall</td><td><span class="tag allow">ALLOW</span></td><td>WireGuard VPN</td>
+        </tr>
+        <tr>
+          <td>Eingehend</td><td>TCP</td><td>443</td><td>Any</td><td>Webserver</td><td><span class="tag allow">ALLOW</span></td><td>HTTPS Webseite</td>
+        </tr>
+        <tr>
+          <td>Eingehend</td><td>TCP</td><td>3389</td><td>Any</td><td>LAN</td><td><span class="tag deny">DENY</span></td><td>RDP nicht direkt öffnen</td>
+        </tr>
+        <tr>
+          <td>Eingehend</td><td>TCP</td><td>3389</td><td>VPN-Netz</td><td>LAN</td><td><span class="tag vpn">VPN only</span></td><td>RDP nur per VPN</td>
+        </tr>
+        <tr>
+          <td>Ausgehend</td><td>Any</td><td>Any</td><td>LAN</td><td>Internet</td><td><span class="tag allow">ALLOW</span></td><td>Normaler Internetzugriff</td>
+        </tr>
+        <tr>
+          <td>Eingehend</td><td>Any</td><td>Any</td><td>Any</td><td>LAN</td><td><span class="tag deny">DENY</span></td><td>Alles andere blockieren</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="section-label">Unsere Leistungen</div>
+    <h2 class="section-title">Was wir für Sie einrichten</h2>
+    <div class="solutions">
+      <div class="solution-card">
+        <div class="solution-icon">🛡️</div>
+        <div class="solution-title">Firewall-Installation</div>
+        <div class="solution-desc">OPNsense oder pfSense auf dedizierter Hardware — inkl. Grundkonfiguration, IDS/IPS und Logging.</div>
+        <span class="solution-tag">Basis</span>
+      </div>
+      <div class="solution-card">
+        <div class="solution-icon">🌐</div>
+        <div class="solution-title">VPN-Einrichtung</div>
+        <div class="solution-desc">WireGuard oder OpenVPN für sicheres Homeoffice — inkl. Client-Konfiguration für alle Geräte.</div>
+        <span class="solution-tag">Homeoffice</span>
+      </div>
+      <div class="solution-card">
+        <div class="solution-icon">🏗️</div>
+        <div class="solution-title">Netzwerksegmentierung</div>
+        <div class="solution-desc">VLANs für Büro, Gäste, Server und IoT — damit ein kompromittiertes Gerät nicht das gesamte Netz gefährdet.</div>
+        <span class="solution-tag">Sicherheit</span>
+      </div>
+      <div class="solution-card">
+        <div class="solution-icon">👁️</div>
+        <div class="solution-title">Intrusion Detection</div>
+        <div class="solution-desc">Suricata IDS/IPS erkennt und blockiert Angriffe automatisch — mit Alerting bei verdächtigen Aktivitäten.</div>
+        <span class="solution-tag">Proaktiv</span>
+      </div>
+      <div class="solution-card">
+        <div class="solution-icon">📱</div>
+        <div class="solution-title">2-Faktor-Authentifizierung</div>
+        <div class="solution-desc">TOTP oder Hardware-Token für VPN und Remote-Zugänge — kein Einloggen nur mit Passwort.</div>
+        <span class="solution-tag">2FA</span>
+      </div>
+      <div class="solution-card">
+        <div class="solution-icon">📈</div>
+        <div class="solution-title">Monitoring & Reporting</div>
+        <div class="solution-desc">Laufende Überwachung von Firewall-Logs und automatische Benachrichtigung bei Auffälligkeiten.</div>
+        <span class="solution-tag">24/7</span>
+      </div>
+    </div>
+
+    <div class="cta-strip">
+      <div>
+        <h3>Kostenloses Sicherheits-Audit</h3>
+        <p>Wir analysieren Ihre aktuelle Netzwerksicherheit und zeigen offene Einfallstore auf.</p>
+      </div>
+      <a href="/cdn-cgi/l/email-protection#fd94939b92bd948993928b9cd08f928e94938e9694d39998" class="cta-btn">Jetzt anfragen →</a>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2025 IT Nova Rosinski · Bernau bei Berlin</span>
+    <span><a href="/cdn
