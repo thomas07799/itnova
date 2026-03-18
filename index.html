@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT Nova Rosinski – IT-Dienstleistungen Bernau</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f0f2f5;
+      --surface: #ffffff;
+      --surface2: #e8ecf2;
+      --accent: #1a5aff;
+      --accent2: #0a3bbf;
+      --text: #0d1117;
+      --muted: #5a6478;
+      --border: #d4dae6;
+      --glow: rgba(26, 90, 255, 0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 48px 48px;
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 68px;
+      background: rgba(240, 242, 245, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff !important;
+      padding: 0.5rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 500 !important;
+      font-size: 0.875rem;
+      transition: background 0.2s !important;
+    }
+
+    .nav-cta:hover { background: var(--accent2) !important; color: #fff !important; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.35rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 2rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      max-width: 800px;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    h1 .highlight {
+      color: var(--accent);
+      position: relative;
+    }
+
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 520px;
+      line-height: 1.7;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    /* Service buttons */
+    .services-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 3.5rem;
+      width: 100%;
+      max-width: 720px;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .service-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 2rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .service-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--glow), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .service-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px var(--glow);
+    }
+
+    .service-btn:hover::before { opacity: 1; }
+
+    .service-btn:hover .btn-arrow { transform: translate(3px, -3px); }
+
+    .btn-icon {
+      width: 44px; height: 44px;
+      background: var(--surface2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      transition: background 0.25s;
+    }
+
+    .service-btn:hover .btn-icon {
+      background: var(--accent);
+    }
+
+    .btn-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .btn-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .btn-arrow {
+      position: absolute;
+      top: 1.5rem; right: 1.5rem;
+      font-size: 1rem;
+      color: var(--muted);
+      transition: transform 0.25s, color 0.25s;
+    }
+
+    .service-btn:hover .btn-arrow { color: var(--accent); }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      gap: 3rem;
+      margin-top: 4rem;
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--accent);
+      letter-spacing: -0.03em;
+    }
+
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Features section */
+    .section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      letter-spacing: -0.03em;
+      max-width: 500px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 8px 30px var(--glow);
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Contact strip */
+    .contact-strip {
+      position: relative;
+      z-index: 1;
+      margin: 0 2rem 6rem;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--accent);
+      border-radius: 16px;
+      padding: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .contact-strip h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .contact-strip p {
+      color: rgba(255,255,255,0.75);
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+    }
+
+    .contact-btn {
+      background: #fff;
+      color: var(--accent);
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .contact-btn:hover { opacity: 0.9; }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1.5rem; }
+      .nav-links { display: none; }
+      .services-grid { grid-template-columns: 1fr; max-width: 400px; }
+      .features { grid-template-columns: 1fr; }
+      .stats { gap: 1.5rem; }
+      .contact-strip { flex-direction: column; text-align: center; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-logo">IT <span>Nova</span> Rosinski</div>
+    <ul class="nav-links">
+      <li><a href="#">Leistungen</a></li>
+      <li><a href="#">Über uns</a></li>
+      <li><a href="#">Referenzen</a></li>
+      <li><a href="/cdn-cgi/l/email-protection#b6dfd8d0d9f6dfc2d8d9c0d79bc4d9c5dfd8c5dddf98d2d3" class="nav-cta">Kontakt</a></li>
+    </ul>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">Ihr IT-Partner in Bernau bei Berlin</div>
+    <h1>IT-Infrastruktur.<br><span class="highlight">Sicher. Lokal. Verlässlich.</span></h1>
+    <p class="hero-sub">Maßgeschneiderte IT-Lösungen für kleine und mittelständische Unternehmen — DSGVO-konform, professionell betreut.</p>
+
+    <div class="services-grid">
+      <a href="datenschutz/datenspeicherung.html" class="service-btn">
+        <div class="btn-icon">🗄️</div>
+        <div class="btn-title">Datenspeicherung & DSGVO</div>
+        <div class="btn-desc">Sichere Datenhaltung auf Ihrem eigenen Server — vollständig DSGVO-konform und auditierbar.</div>
+        <span class="btn-arrow">↗</span>
+      </a>
+      <a href="firewall/firewall.html" class="service-btn">
+        <div class="btn-icon">🔒</div>
+        <div class="btn-title">Firewall & Fernzugriff</div>
+        <div class="btn-desc">Professionelle Netzwerksicherheit und sicherer Remote-Zugriff für Ihr Unternehmen.</div>
+        <span class="btn-arrow">↗</span>
+      </a>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">DSGVO-konform</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">24/7</div>
+        <div class="stat-label">Monitoring</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">lokal</div>
+        <div class="stat-label">Ihre Daten bleiben bei Ihnen</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-label">Warum IT Nova</div>
+    <h2 class="section-title">IT die wirklich für Sie arbeitet</h2>
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">🏢</div>
+        <div class="feature-title">Lokal & persönlich</div>
+        <div class="feature-desc">Als regionaler Anbieter aus Bernau kennen wir die Anforderungen kleiner Unternehmen in Brandenburg.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <div class="feature-title">Datenschutz first</div>
+        <div class="feature-desc">Alle Lösungen werden DSGVO-konform konzipiert — keine Daten in fremde Clouds, alles unter Ihrer Kontrolle.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Schnelle Reaktionszeiten</div>
+        <div class="feature-desc">Störungen werden remote oder vor Ort behoben — meist noch am selben Tag.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Monitoring & Backup</div>
+        <div class="feature-desc">Proaktive Überwachung Ihrer Systeme und automatisierte Backups — bevor etwas schiefgeht.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-title">Alles aus einer Hand</div>
+        <div class="feature-desc">Von der Planung über die Einrichtung bis zur laufenden Betreuung — ein Ansprechpartner für alles.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💶</div>
+        <div class="feature-title">Faire Preise</div>
+        <div class="feature-desc">Transparente Pauschalpreise ohne versteckte Kosten — ideal für Betriebe mit 5–20 Mitarbeitern.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="contact-strip">
+    <div>
+      <h3>Jetzt unverbindlich anfragen</h3>
+      <p>Kostenloses Erstgespräch — wir analysieren Ihre aktuelle IT-Situation.</p>
+    </div>
+    <a href="/cdn-cgi/l/email-protection#9bf2f5fdf4dbf2eff5f4edfab6e9f4e8f2f5e8f0f2b5fffe" class="contact-btn">Kontakt aufnehmen →</a>
+  </div>
+
+  <footer>
+    <span>© 2025 IT Nova Rosinski · Ber
